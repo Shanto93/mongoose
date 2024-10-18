@@ -2,16 +2,17 @@ import express, {
   type Application,
   type Request,
   type Response,
-} from "express";
-import cors from "cors";
+} from 'express';
+import cors from 'cors';
 const app: Application = express();
 
 //Parser
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (req: Request, res: Response) => {
-  const a =10;
+app.get('/', (req: Request, res: Response) => {
+  const a = 10;
+
   res.send(a);
 });
 
