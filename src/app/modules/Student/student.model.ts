@@ -4,7 +4,7 @@ import type {
   LocalGuardian,
   Name,
   Student,
-} from './Student/student.interface';
+} from './student.interface';
 
 const nameSchema = new Schema<Name>({
   firstName: { type: String, required: true },
@@ -46,7 +46,6 @@ const studentSchema = new Schema<Student>({
   avatar: String,
 });
 
-
 // model creation
 
-const Student = model<Student>('Student', studentSchema);
+export const StudentModel = model<Student>('Student', studentSchema);
