@@ -7,9 +7,30 @@ import type {
 } from './student.interface';
 
 const nameSchema = new Schema<Name>({
-  firstName: { type: String, required: true },
+  firstName: {
+    type: String,
+    required: [true, 'First Name is required'],
+    trim: true, //remove spaces
+    maxlength: [20, 'First name can not be more than 20 characters'],
+    //Custom Validation
+    validate: {
+      validator: function (value: string) {
+        const FirstCapitalLetter =
+          value.charAt(0).toUpperCase() + value.slice(1);
+        if (value !== FirstCapitalLetter) {
+          return false;
+        } else {
+          return true;
+        }
+      },
+      message: '{VALUE} is not in capitalize fomat',
+    },
+  },
   middleName: String,
-  lastName: { type: String, required: true },
+  lastName: {
+    type: String,
+    required: [true, 'Last Name is required'],
+  },
 });
 
 const guardianSchema = new Schema<Guardian>({
@@ -29,20 +50,51 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 });
 
 const studentSchema = new Schema<Student>({
-  id: { type: String },
-  name: nameSchema,
+  id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  name: {
+    type: nameSchema,
+    required: true,
+  },
   email: { type: String, required: true },
-  gender: ['male', 'female'],
+  gender: {
+    type: String,
+    enum: {
+      values: ['male', 'female'],
+      message: "The gender field can only be the following: 'male', 'female'",
+    },
+    required: true,
+  },
   dateOfBirth: String,
   contactNumber: { type: String, required: true },
   emergencyContactNumber: { type: String, required: true },
-  bloodGroup: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+  bloodGroup: {
+    type: String,
+    enum: {
+      values: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+      message: '{VALUE} is not valid',
+    },
+    required: true,
+  },
   presentAddress: { type: String, required: true },
   permanentAddress: { type: String, required: true },
-  guardian: guardianSchema,
-  localGuardian: localGuardianSchema,
+  guardian: {
+    type: guardianSchema,
+    required: true,
+  },
+  localGuardian: {
+    type: localGuardianSchema,
+    required: true,
+  },
   profileImg: String,
-  isActive: ['active', 'inActive'],
+  isActive: {
+    type: String,
+    enum: ['active', 'inActive'],
+    default: 'active',
+  },
   avatar: String,
 });
 
