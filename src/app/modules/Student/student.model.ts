@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose';
+import validator from 'validator';
 import type {
   Guardian,
   LocalGuardian,
@@ -10,94 +11,200 @@ const nameSchema = new Schema<Name>({
   firstName: {
     type: String,
     required: [true, 'First Name is required'],
-    trim: true, //remove spaces
-    maxlength: [20, 'First name can not be more than 20 characters'],
-    //Custom Validation
+    trim: true, // Remove spaces
+    maxlength: [20, 'First Name cannot exceed 20 characters'],
+    // Custom validation for capitalizing first letter
     validate: {
       validator: function (value: string) {
         const FirstCapitalLetter =
           value.charAt(0).toUpperCase() + value.slice(1);
-        if (value !== FirstCapitalLetter) {
-          return false;
-        } else {
-          return true;
-        }
+        return value === FirstCapitalLetter; // Validator returns boolean
       },
-      message: '{VALUE} is not in capitalize fomat',
+      message: '{VALUE} must start with a capital letter',
     },
   },
-  middleName: String,
+  middleName: {
+    type: String,
+    trim: true,
+    maxlength: [20, 'Middle Name cannot exceed 20 characters'],
+  },
   lastName: {
     type: String,
     required: [true, 'Last Name is required'],
+    // Custom validation for alphabetic characters only
+    validate: {
+      validator: function (value: string) {
+        return validator.isAlpha(value); // Return boolean to check alpha
+      },
+      message: '{VALUE} can only contain alphabetic characters',
+    },
   },
 });
 
 const guardianSchema = new Schema<Guardian>({
-  fatherName: { type: String, required: true },
-  fatherOccupation: { type: String, required: true },
-  fatherContactNumber: { type: String, required: true },
-  motherName: { type: String, required: true },
-  motherOccupation: { type: String, required: true },
-  motherContactNumber: { type: String, required: true },
+  fatherName: {
+    type: String,
+    required: [true, "Father's Name is required"],
+  },
+  fatherOccupation: {
+    type: String,
+    required: [true, "Father's Occupation is required"],
+  },
+  fatherContactNumber: {
+    type: String,
+    required: [true, "Father's Contact Number is required"],
+    validate: {
+      validator: function (value: string) {
+        return validator.isMobilePhone(value);
+      },
+      message: '{VALUE} is not a valid contact number',
+    },
+  },
+  motherName: {
+    type: String,
+    required: [true, "Mother's Name is required"],
+  },
+  motherOccupation: {
+    type: String,
+    required: [true, "Mother's Occupation is required"],
+  },
+  motherContactNumber: {
+    type: String,
+    required: [true, "Mother's Contact Number is required"],
+    validate: {
+      validator: function (value: string) {
+        return validator.isMobilePhone(value);
+      },
+      message: '{VALUE} is not a valid contact number',
+    },
+  },
 });
 
 const localGuardianSchema = new Schema<LocalGuardian>({
-  name: { type: String, required: true },
-  occupation: { type: String, required: true },
-  contactNumber: { type: String, required: true },
-  address: { type: String, required: true },
+  name: {
+    type: String,
+    required: [true, "Local Guardian's Name is required"],
+  },
+  occupation: {
+    type: String,
+    required: [true, "Local Guardian's Occupation is required"],
+  },
+  contactNumber: {
+    type: String,
+    required: [true, "Local Guardian's Contact Number is required"],
+    validate: {
+      validator: function (value: string) {
+        return validator.isMobilePhone(value);
+      },
+      message: '{VALUE} is not a valid contact number',
+    },
+  },
+  address: {
+    type: String,
+    required: [true, "Local Guardian's Address is required"],
+  },
 });
 
 const studentSchema = new Schema<Student>({
   id: {
     type: String,
-    required: true,
+    required: [true, 'Student ID is required'],
     unique: true,
   },
   name: {
     type: nameSchema,
-    required: true,
+    required: [true, 'Name is required'],
   },
-  email: { type: String, required: true },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    validate: {
+      validator: function (value: string) {
+        return validator.isEmail(value);
+      },
+      message: '{VALUE} is not a valid email',
+    },
+  },
   gender: {
     type: String,
     enum: {
       values: ['male', 'female'],
-      message: "The gender field can only be the following: 'male', 'female'",
+      message: "Gender must be either 'male' or 'female'",
     },
-    required: true,
+    required: [true, 'Gender is required'],
   },
-  dateOfBirth: String,
-  contactNumber: { type: String, required: true },
-  emergencyContactNumber: { type: String, required: true },
+  dateOfBirth: {
+    type: String,
+    required: [true, 'Date of Birth is required'],
+  },
+  contactNumber: {
+    type: String,
+    required: [true, 'Contact Number is required'],
+    validate: {
+      validator: function (value: string) {
+        return validator.isMobilePhone(value);
+      },
+      message: '{VALUE} is not a valid contact number',
+    },
+  },
+  emergencyContactNumber: {
+    type: String,
+    required: [true, 'Emergency Contact Number is required'],
+    validate: {
+      validator: function (value: string) {
+        return validator.isMobilePhone(value);
+      },
+      message: '{VALUE} is not a valid emergency contact number',
+    },
+  },
   bloodGroup: {
     type: String,
     enum: {
       values: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
-      message: '{VALUE} is not valid',
+      message: '{VALUE} is not a valid blood group',
     },
-    required: true,
+    required: [true, 'Blood Group is required'],
   },
-  presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
+  presentAddress: {
+    type: String,
+    required: [true, 'Present Address is required'],
+  },
+  permanentAddress: {
+    type: String,
+    required: [true, 'Permanent Address is required'],
+  },
   guardian: {
     type: guardianSchema,
-    required: true,
+    required: [true, 'Guardian information is required'],
   },
   localGuardian: {
     type: localGuardianSchema,
-    required: true,
+    required: [true, 'Local Guardian information is required'],
   },
-  profileImg: String,
+  profileImg: {
+    type: String,
+    validate: {
+      validator: function (value: string) {
+        return validator.isURL(value);
+      },
+      message: '{VALUE} is not a valid URL',
+    },
+  },
   isActive: {
     type: String,
     enum: ['active', 'inActive'],
     default: 'active',
   },
-  avatar: String,
+  avatar: {
+    type: String,
+    validate: {
+      validator: function (value: string) {
+        return validator.isURL(value);
+      },
+      message: '{VALUE} is not a valid avatar URL',
+    },
+  },
 });
 
 // model creation
-
 export const StudentModel = model<Student>('Student', studentSchema);
